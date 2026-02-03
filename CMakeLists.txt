@@ -30,7 +30,7 @@ message("Configuring DataSketches version ${BASE_VERSION}")
 
 include(GNUInstallDirs)
 include(CMakeDependentOption)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 ### Require out-of-source builds
 file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
 if(EXISTS "${LOC_PATH}")
@@ -163,6 +163,26 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/DataSketchesConfigVersion.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/DataSketchesConfig.cmake"
         DESTINATION lib/DataSketches/cmake)
 
+
+# Optional clang-tidy target: runs clang-tidy over all .hpp files excluding any path containing '/test/'
+option(ENABLE_CLANG_TIDY "Create clang-tidy target" OFF)
+if(ENABLE_CLANG_TIDY)
+  find_program(CLANG_TIDY_EXECUTABLE NAMES "clang-tidy" "clang-tidy-14" "clang-tidy-13")
+  if(NOT CLANG_TIDY_EXECUTABLE)
+    message(WARNING "clang-tidy not found in PATH; the clang-tidy target will fail if run")
+    # 退出
+
+  endif()
+
+  file(GLOB_RECURSE CLANG_TIDY_HEADERS "${CMAKE_SOURCE_DIR}/*.hpp")
+
+  add_custom_target(clang-tidy
+    COMMAND ${CLANG_TIDY_EXECUTABLE} --quiet ${CLANG_TIDY_HEADERS} -p ./build/Release/compile_commands.json
+    COMMAND bash "${RUN_SCRIPT}"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Run clang-tidy on all .hpp files (excluding test directories)"
+  )
+endif()
 
 #set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 #set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

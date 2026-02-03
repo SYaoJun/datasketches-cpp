@@ -40,7 +40,7 @@ class u32_table {
 public:
   using vector_u32 = std::vector<uint32_t, typename std::allocator_traits<A>::template rebind_alloc<uint32_t>>;
 
-  u32_table(const A& allocator);
+  explicit u32_table(const A& allocator);
   u32_table(uint8_t lg_size, uint8_t num_valid_bits, const A& allocator);
 
   inline uint32_t get_num_items() const;

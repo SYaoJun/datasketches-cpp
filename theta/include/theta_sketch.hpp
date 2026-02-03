@@ -582,7 +582,7 @@ private:
   using data_type = compact_theta_sketch_parser<true>::compact_theta_sketch_data;
   data_type data_;
 
-  wrapped_compact_theta_sketch_alloc(const data_type& data);
+  explicit wrapped_compact_theta_sketch_alloc(const data_type& data);
 };
 
 template<typename Allocator>

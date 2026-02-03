@@ -1,0 +1,1 @@
+clang-tidy --config-file=./.clang-tidy -fix  /Users/yaojun/db/datasketches-cpp/count/include/count_min_impl.hpp

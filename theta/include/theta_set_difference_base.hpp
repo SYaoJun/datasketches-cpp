@@ -37,7 +37,7 @@ public:
   using AllocU64 = typename std::allocator_traits<Allocator>::template rebind_alloc<uint64_t>;
   using hash_table = theta_update_sketch_base<uint64_t, trivial_extract_key, AllocU64>;
 
-  theta_set_difference_base(uint64_t seed, const Allocator& allocator = Allocator());
+  explicit theta_set_difference_base(uint64_t seed, const Allocator& allocator = Allocator());
 
   template<typename FwdSketch, typename Sketch>
   CompactSketch compute(FwdSketch&& a, const Sketch& b, bool ordered) const;

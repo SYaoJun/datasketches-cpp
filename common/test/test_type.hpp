@@ -31,7 +31,7 @@ class test_type_alloc {
   static const bool DEBUG = false;
 public:
   // no default constructor should be required
-  test_type_alloc(int value): value_ptr(A().allocate(1)) {
+  explicit test_type_alloc(int value): value_ptr(A().allocate(1)) {
     if (DEBUG) std::cerr << "test_type constructor" << std::endl;
     *value_ptr = value;
   }

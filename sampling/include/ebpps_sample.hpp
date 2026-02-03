@@ -194,7 +194,7 @@ private:
   static const size_t PARTIAL_IDX = static_cast<size_t>(-1);
 
   // default iterator over sample
-  const_iterator(const ebpps_sample<T, A>* sample);
+    explicit const_iterator(const ebpps_sample<T, A>* sample);
 
   const ebpps_sample<T, A>* sample_;
   size_t idx_;
