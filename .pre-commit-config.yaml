@@ -24,6 +24,13 @@ repos:
   - repo: https://github.com/pocc/pre-commit-hooks
     rev: v1.3.5
     hooks:
+      - id: clang-format
+        entry: /opt/homebrew/opt/llvm@18/bin/clang-format
+        args: ['--style=file', '-i']
+        types_or: [c++, c]
+        files: ^hll|kll|quantiles
       - id: clang-tidy
+        entry: /opt/homebrew/opt/llvm@18/bin/clang-tidy
         args: ['--quiet', '-p=build/compile_commands.json', '--config-file=.clang-tidy']
         types_or: [c++, c]
+        files: ^hll|kll|quantiles

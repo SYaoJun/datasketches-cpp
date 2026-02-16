@@ -1,0 +1,3 @@
+BreakBeforeBraces: Attach
+AllowShortIfStatementsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Always
