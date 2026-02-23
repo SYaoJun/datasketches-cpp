@@ -596,8 +596,8 @@ compact_theta_sketch_alloc<A> compact_theta_sketch_alloc<A>::deserialize_v1(
   const auto theta = read<uint64_t>(is);
   std::vector<uint64_t, A> entries(num_entries, 0, allocator);
   bool is_empty = (num_entries == 0) && (theta == theta_constants::MAX_THETA);
-  if (!is_empty) read(is, entries.data(), sizeof(uint64_t) * entries.size());
-  if (!is.good()) throw std::runtime_error("error reading from std::istream");
+  if (!is_empty) { read(is, entries.data(), sizeof(uint64_t) * entries.size()); }
+  if (!is.good()) { throw std::runtime_error("error reading from std::istream"); }
   return compact_theta_sketch_alloc(is_empty, true, seed_hash, theta, std::move(entries));
 }
 
@@ -610,7 +610,7 @@ compact_theta_sketch_alloc<A> compact_theta_sketch_alloc<A>::deserialize_v2(
   const uint16_t seed_hash = read<uint16_t>(is);
   checker<true>::check_seed_hash(seed_hash, compute_seed_hash(seed));
   if (preamble_longs == 1) {
-    if (!is.good()) throw std::runtime_error("error reading from std::istream");
+    if (!is.good()) { throw std::runtime_error("error reading from std::istream"); }
     std::vector<uint64_t, A> entries(0, 0, allocator);
     return compact_theta_sketch_alloc(true, true, seed_hash, theta_constants::MAX_THETA, std::move(entries));
   } else if (preamble_longs == 2) {
@@ -621,7 +621,7 @@ compact_theta_sketch_alloc<A> compact_theta_sketch_alloc<A>::deserialize_v2(
       return compact_theta_sketch_alloc(true, true, seed_hash, theta_constants::MAX_THETA, std::move(entries));
     }
     read(is, entries.data(), entries.size() * sizeof(uint64_t));
-    if (!is.good()) throw std::runtime_error("error reading from std::istream");
+    if (!is.good()) { throw std::runtime_error("error reading from std::istream"); }
     return compact_theta_sketch_alloc(false, true, seed_hash, theta_constants::MAX_THETA, std::move(entries));
   } else if (preamble_longs == 3) {
     const uint32_t num_entries = read<uint32_t>(is);
@@ -630,11 +630,11 @@ compact_theta_sketch_alloc<A> compact_theta_sketch_alloc<A>::deserialize_v2(
     bool is_empty = (num_entries == 0) && (theta == theta_constants::MAX_THETA);
     std::vector<uint64_t, A> entries(num_entries, 0, allocator);
     if (is_empty) {
-      if (!is.good()) throw std::runtime_error("error reading from std::istream");
+      if (!is.good()) { throw std::runtime_error("error reading from std::istream"); }
       return compact_theta_sketch_alloc(true, true, seed_hash, theta, std::move(entries));
     } else {
       read(is, entries.data(), sizeof(uint64_t) * entries.size());
-      if (!is.good()) throw std::runtime_error("error reading from std::istream");
+      if (!is.good()) { throw std::runtime_error("error reading from std::istream"); }
       return compact_theta_sketch_alloc(false, true, seed_hash, theta, std::move(entries));
     }
   } else {
@@ -663,9 +663,9 @@ compact_theta_sketch_alloc<A> compact_theta_sketch_alloc<A>::deserialize_v3(
     }
   }
   std::vector<uint64_t, A> entries(num_entries, 0, allocator);
-  if (!is_empty) read(is, entries.data(), sizeof(uint64_t) * entries.size());
+  if (!is_empty) { read(is, entries.data(), sizeof(uint64_t) * entries.size()); }
   const bool is_ordered = flags_byte & (1 << flags::IS_ORDERED);
-  if (!is.good()) throw std::runtime_error("error reading from std::istream");
+  if (!is.good()) { throw std::runtime_error("error reading from std::istream"); }
   return compact_theta_sketch_alloc(is_empty, is_ordered, seed_hash, theta, std::move(entries));
 }
 
@@ -695,8 +695,8 @@ compact_theta_sketch_alloc<A> compact_theta_sketch_alloc<A>::deserialize_v4(
     unpack_bits_block8(&entries[i], buffer.data(), entry_bits);
   }
   // unpack extra deltas if fewer than 8 of them left
-  if (i < num_entries) read(is, buffer.data(), whole_bytes_to_hold_bits((num_entries - i) * entry_bits));
-  if (!is.good()) throw std::runtime_error("error reading from std::istream");
+  if (i < num_entries) { read(is, buffer.data(), whole_bytes_to_hold_bits((num_entries - i) * entry_bits)); }
+  if (!is.good()) { throw std::runtime_error("error reading from std::istream"); }
   const uint8_t* ptr = buffer.data();
   uint8_t offset = 0;
   for (; i < num_entries; ++i) {
