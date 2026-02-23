@@ -541,7 +541,7 @@ void bloom_filter_alloc<A>::update_num_bits_set(uint64_t num_bits_set) {
 
 template<typename A>
 void bloom_filter_alloc<A>::update(const std::string& item) {
-  if (item.empty()) return;
+  if (item.empty()) { return; }
   const uint64_t h0 = XXHash64::hash(item.data(), item.size(), seed_);
   const uint64_t h1 = XXHash64::hash(item.data(), item.size(), h0);
   internal_update(h0, h1);
@@ -615,7 +615,7 @@ void bloom_filter_alloc<A>::update(float item) {
 
 template<typename A>
 void bloom_filter_alloc<A>::update(const void* item, size_t size) {
-  if (item == nullptr || size == 0) return;
+  if (item == nullptr || size == 0) { return; }
   const uint64_t h0 = XXHash64::hash(item, size, seed_);
   const uint64_t h1 = XXHash64::hash(item, size, h0);
   internal_update(h0, h1);
@@ -638,7 +638,7 @@ void bloom_filter_alloc<A>::internal_update(uint64_t h0, uint64_t h1) {
 
 template<typename A>
 bool bloom_filter_alloc<A>::query_and_update(const std::string& item) {
-  if (item.empty()) return false;
+  if (item.empty()) { return false; }
   const uint64_t h0 = XXHash64::hash(item.data(), item.size(), seed_);
   const uint64_t h1 = XXHash64::hash(item.data(), item.size(), h0);
   return internal_query_and_update(h0, h1);
@@ -712,7 +712,7 @@ bool bloom_filter_alloc<A>::query_and_update(float item) {
 
 template<typename A>
 bool bloom_filter_alloc<A>::query_and_update(const void* item, size_t size) {
-  if (item == nullptr || size == 0) return false;
+  if (item == nullptr || size == 0) { return false; }
   const uint64_t h0 = XXHash64::hash(item, size, seed_);
   const uint64_t h1 = XXHash64::hash(item, size, h0);
   return internal_query_and_update(h0, h1);
@@ -738,7 +738,7 @@ bool bloom_filter_alloc<A>::internal_query_and_update(uint64_t h0, uint64_t h1) 
 
 template<typename A>
 bool bloom_filter_alloc<A>::query(const std::string& item) const {
-  if (item.empty()) return false;
+  if (item.empty()) { return false; }
   const uint64_t h0 = XXHash64::hash(item.data(), item.size(), seed_);
   const uint64_t h1 = XXHash64::hash(item.data(), item.size(), h0);
   return internal_query(h0, h1);
@@ -812,7 +812,7 @@ bool bloom_filter_alloc<A>::query(float item) const {
 
 template<typename A>
 bool bloom_filter_alloc<A>::query(const void* item, size_t size) const {
-  if (item == nullptr || size == 0) return false;
+  if (item == nullptr || size == 0) { return false; }
   const uint64_t h0 = XXHash64::hash(item, size, seed_);
   const uint64_t h1 = XXHash64::hash(item, size, h0);
   return internal_query(h0, h1);
@@ -820,12 +820,13 @@ bool bloom_filter_alloc<A>::query(const void* item, size_t size) const {
 
 template<typename A>
 bool bloom_filter_alloc<A>::internal_query(uint64_t h0, uint64_t h1) const {
-  if (is_empty()) return false;
+  if (is_empty()) { return false; }
   const uint64_t num_bits = get_capacity();
   for (uint16_t i = 1; i <= num_hashes_; i++) {
     const uint64_t hash_index = ((h0 + i * h1) >> 1) % num_bits;
-    if (!bit_array_ops::get_bit(bit_array_, hash_index))
+    if (!bit_array_ops::get_bit(bit_array_, hash_index)) {
       return false;
+    }
   }
   return true;
 }
