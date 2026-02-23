@@ -153,10 +153,11 @@ var_opt_union<T, A> var_opt_union<T, A>::deserialize(std::istream& is, const Ser
   bool is_empty = flags & EMPTY_FLAG_MASK;
   
   if (is_empty) {
-    if (!is.good())
-      throw std::runtime_error("error reading from std::istream"); 
-    else
+    if (!is.good()) {
+      throw std::runtime_error("error reading from std::istream");
+    } else {
       return var_opt_union(max_k);
+    }
   }
 
   const auto items_seen = read<uint64_t>(is);
@@ -165,8 +166,9 @@ var_opt_union<T, A> var_opt_union<T, A>::deserialize(std::istream& is, const Ser
 
   var_opt_sketch<T, A> gadget = var_opt_sketch<T, A>::deserialize(is, sd, allocator);
 
-  if (!is.good())
-    throw std::runtime_error("error reading from std::istream"); 
+  if (!is.good()) {
+    throw std::runtime_error("error reading from std::istream");
+  }
 
   return var_opt_union(items_seen, outer_tau_numer, outer_tau_denom, max_k, std::move(gadget), allocator);
 }
@@ -454,7 +456,7 @@ var_opt_sketch<T, A> var_opt_union<T, A>::get_result() const {
  */
 template<typename T, typename A>
 var_opt_sketch<T, A> var_opt_union<T, A>::simple_gadget_coercer() const {
-  if (gadget_.num_marks_in_h_ != 0) throw std::logic_error("simple gadget coercer only applies if no marks");
+  if (gadget_.num_marks_in_h_ != 0) { throw std::logic_error("simple gadget coercer only applies if no marks"); }
   return var_opt_sketch<T, A>(gadget_, true, n_);
 }
 
@@ -547,7 +549,7 @@ void var_opt_union<T, A>::mark_moving_gadget_coercer(var_opt_sketch<T, A>& sk) c
     }
   }
 
-  if (result_h + result_r != result_k) throw std::logic_error("H + R counts must equal k");
+  if (result_h + result_r != result_k) { throw std::logic_error("H + R counts must equal k"); }
   if (std::abs(transferred_weight - outer_tau_numer_) > 1e-10) {
     throw std::logic_error("unexpected mismatch in transferred weight");
   }
@@ -584,9 +586,9 @@ void var_opt_union<T, A>::migrate_marked_items_by_decreasing_k(var_opt_sketch<T,
   const uint32_t k = gcopy.k_;
 
   // should be ensured by caller
-  if (gcopy.num_marks_in_h_ == 0) throw std::logic_error("unexpectedly found no marked items to migrate");
+  if (gcopy.num_marks_in_h_ == 0) { throw std::logic_error("unexpectedly found no marked items to migrate"); }
   // either full (of samples), in pseudo-exact mode, or both
-  if ((r_count != 0) && ((h_count + r_count) != k)) throw std::logic_error("invalid gadget state");
+  if ((r_count != 0) && ((h_count + r_count) != k)) { throw std::logic_error("invalid gadget state"); }
 
   // if non-full and pseudo-exact, change k so that gcopy is full
   if ((r_count == 0) && (h_count < k)) {
@@ -599,7 +601,7 @@ void var_opt_union<T, A>::migrate_marked_items_by_decreasing_k(var_opt_sketch<T,
   gcopy.decrease_k_by_1();
 
   // gcopy is now in estimation mode, just like the final result must be (due to marked items)
-  if (gcopy.get_tau() == 0.0) throw std::logic_error("gadget must be in sampling mode");
+  if (gcopy.get_tau() == 0.0) { throw std::logic_error("gadget must be in sampling mode"); }
 
   // keep reducing k until all marked items have been absorbed into the reservoir
   while (gcopy.num_marks_in_h_ > 0) {

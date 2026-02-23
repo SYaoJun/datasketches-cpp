@@ -572,10 +572,11 @@ var_opt_sketch<T, A> var_opt_sketch<T, A>::deserialize(std::istream& is, const S
   const bool is_gadget = flags & GADGET_FLAG_MASK;
 
   if (is_empty) {
-    if (!is.good())
-      throw std::runtime_error("error reading from std::istream"); 
-    else
+    if (!is.good()) {
+      throw std::runtime_error("error reading from std::istream");
+    } else {
       return var_opt_sketch(k, rf, is_gadget, allocator);
+    }
   }
 
   // second and third prelongs
@@ -632,8 +633,9 @@ var_opt_sketch<T, A> var_opt_sketch<T, A>::deserialize(std::istream& is, const S
   sd.deserialize(is, &(items.get()[h + 1]), r);
   items.get_deleter().set_r(r); // serde didn't throw, so the items are now valid
 
-  if (!is.good())
-    throw std::runtime_error("error reading from std::istream"); 
+  if (!is.good()) {
+    throw std::runtime_error("error reading from std::istream");
+  }
 
   return var_opt_sketch(k, h, (r > 0 ? 1 : 0), r, n, total_wt_r, rf, array_size, false,
                         std::move(items), std::move(weights), num_marks_in_h, std::move(marks), allocator);
@@ -786,8 +788,9 @@ void var_opt_sketch<T, A>::update(O&& item, double weight, bool mark) {
   } else {
     // sketch is in estimation mode so we can make the following check,
     // although very conservative to check every time
-    if ((h_ != 0) && (peek_min() < get_tau()))
+    if ((h_ != 0) && (peek_min() < get_tau())) {
       throw std::logic_error("sketch not in valid estimation mode");
+    }
 
     // what tau would be if deletion candidates turn out to be R plus the new item
     // note: (r_ + 1) - 1 is intentional
@@ -813,7 +816,7 @@ template<typename T, typename A>
 template<typename O>
 void var_opt_sketch<T, A>::update_warmup_phase(O&& item, double weight, bool mark) {
   // seems overly cautious
-  if (r_ > 0 || m_ != 0 || h_ > k_) throw std::logic_error("invalid sketch state during warmup");
+  if (r_ > 0 || m_ != 0 || h_ > k_) { throw std::logic_error("invalid sketch state during warmup"); }
 
   if (h_ >= curr_items_alloc_) {
     grow_data_arrays();
@@ -842,12 +845,13 @@ void var_opt_sketch<T, A>::update_warmup_phase(O&& item, double weight, bool mar
 template<typename T, typename A>
 template<typename O>
 void var_opt_sketch<T, A>::update_light(O&& item, double weight, bool mark) {
-  if (r_ == 0 || (r_ + h_) != k_) throw std::logic_error("invalid sketch state during light warmup");
+  if (r_ == 0 || (r_ + h_) != k_) { throw std::logic_error("invalid sketch state during light warmup"); }
 
   const uint32_t m_slot = h_; // index of the gap, which becomes the M region
   if (filled_data_) {
-    if (&data_[m_slot] != &item)
+    if (&data_[m_slot] != &item) {
       data_[m_slot] = std::forward<O>(item);
+    }
   } else {
     new (&data_[m_slot]) T(std::forward<O>(item));
     filled_data_ = true;
@@ -870,7 +874,7 @@ void var_opt_sketch<T, A>::update_light(O&& item, double weight, bool mark) {
 template<typename T, typename A>
 template<typename O>
 void var_opt_sketch<T, A>::update_heavy_general(O&& item, double weight, bool mark) {
-  if (r_ < 2 || m_ != 0 || (r_ + h_) != k_) throw std::logic_error("invalid sketch state during heavy general update");
+  if (r_ < 2 || m_ != 0 || (r_ + h_) != k_) { throw std::logic_error("invalid sketch state during heavy general update"); }
 
   // put into H, although may come back out momentarily
   push(std::forward<O>(item), weight, mark);
@@ -884,7 +888,7 @@ void var_opt_sketch<T, A>::update_heavy_general(O&& item, double weight, bool ma
 template<typename T, typename A>
 template<typename O>
 void var_opt_sketch<T, A>::update_heavy_r_eq1(O&& item, double weight, bool mark) {
-  if (r_ != 1 || m_ != 0 || (r_ + h_) != k_) throw std::logic_error("invalid sketch state during heavy r=1 update");
+  if (r_ != 1 || m_ != 0 || (r_ + h_) != k_) { throw std::logic_error("invalid sketch state during heavy r=1 update"); }
 
   push(std::forward<O>(item), weight, mark);  // new item into H
   pop_min_to_m_region();     // pop lightest back into M
